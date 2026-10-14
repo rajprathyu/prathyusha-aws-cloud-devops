@@ -28,7 +28,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: 01-vpc-project
+        working-directory: vpc-project
 
     steps:
       - name: Checkout repository
