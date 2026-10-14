@@ -1,42 +1,40 @@
-name: Terraform AWS Infrastructure
+name: VPC Terraform Deployment
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "**.tf"
-      - ".github/workflows/terraform.yml"
-  push:
-    branches:
-      - main
-    paths:
-      - "**.tf"
-      - ".github/workflows/terraform.yml"
   workflow_dispatch:
+    inputs:
+      action:
+        description: "Choose Terraform action"
+        required: true
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+        default: plan
 
 permissions:
   contents: read
   id-token: write
 
-concurrency:
-  group: terraform-aws-infrastructure
-  cancel-in-progress: false
-
-env:
-  AWS_REGION: us-east-1
-  TF_IN_AUTOMATION: true
-
 jobs:
   terraform:
-    name: Terraform CI/CD
+    name: Terraform
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    defaults:
+      run:
+        working-directory: 01-vpc-project
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
+      - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Check AWS role variable
@@ -67,27 +65,36 @@ jobs:
             core.info(`OIDC subject: ${payload.sub}`);
             core.info(`OIDC audience: ${payload.aud}`);
 
-    
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-1
 
-      - name: Terraform Format
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      - name: Terraform format check
         run: terraform fmt -check -recursive
 
-      - name: Terraform Init
-        run: terraform init
+      - name: Terraform initialize
+        run: terraform init -input=false
 
-      - name: Terraform Validate
+      - name: Terraform validate
         run: terraform validate
 
-      - name: Terraform Plan
-        run: terraform plan -input=false -no-color
+      - name: Terraform plan
+        run: terraform plan -input=false -out=tfplan
 
-      - name: Terraform Apply
-        if: >-
-          github.event_name == 'push' &&
-          github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve -input=false
+      - name: Terraform apply
+        if: ${{ inputs.action == 'apply' }}
+        run: terraform apply -input=false -auto-approve tfplan
+
+      - name: Terraform destroy plan
+        if: ${{ inputs.action == 'destroy' }}
+        run: terraform plan -destroy -input=false -out=destroy.tfplan
+
+      - name: Terraform destroy
+        if: ${{ inputs.action == 'destroy' }}
+        run: terraform apply -input=false -auto-approve destroy.tfplan
