@@ -13,27 +13,27 @@ module "vpc" {
 
   public_subnets = {
     public-1 = {
-     cidr_block     = "10.0.1.0/24"
-     availability_zone = "us-east-1a"
+      cidr_block        = "10.0.1.0/24"
+      availability_zone = "us-east-1a"
     }
 
     public-2 = {
-      cidr_block   = "10.0.2.0/24"
+      cidr_block        = "10.0.2.0/24"
       availability_zone = "us-east-1b"
     }
   }
 
   private_subnets = {
     private-1 = {
-      cidr_block       = "10.0.11.0/24"
-      availability_zone     = "us-east-1a"
-      nat_key = "public-1"
+      cidr_block        = "10.0.11.0/24"
+      availability_zone = "us-east-1a"
+      nat_key           = "public-1"
     }
 
     private-2 = {
-      cidr_block     = "10.0.12.0/24"
-      availability_zone    = "us-east-1b"
-      nat_key = "public-2"
+      cidr_block        = "10.0.12.0/24"
+      availability_zone = "us-east-1b"
+      nat_key           = "public-2"
     }
   }
 
