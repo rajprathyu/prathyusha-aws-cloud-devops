@@ -6,7 +6,7 @@ provider "aws" {
 module "vpc" {
   source = "git::https://github.com/rajprathyu/Prathyu-aws-terraform-modules.git//vpc?ref=v1.0.0"
 
-  name = "payment-dev"
+  name     = "payment-dev"
   vpc_cidr = "10.0.0.0/16"
 
   public_subnets = {
