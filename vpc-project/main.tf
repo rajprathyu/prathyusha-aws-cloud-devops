@@ -5,7 +5,7 @@ provider "aws" {
 
 module "vpc" {
   source = "git::https://github.com/rajprathyu/Prathyu-aws-terraform-modules.git//vpc?ref=v1.0.0"
-region = "us-east-1"
+  region = "us-east-1"
 
 
   name     = "payment-dev"
