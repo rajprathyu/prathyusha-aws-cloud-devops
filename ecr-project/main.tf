@@ -13,4 +13,4 @@ module "ecr" {
     Environment = "Dev"
     ManagedBy   = "Terraform"
   }
-}i
+}
