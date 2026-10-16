@@ -1,5 +1,5 @@
 module "ecr" {
-  source = "git::https://github.com/rajprathyu/prathyusha-aws-cloud-devops.git//ecr?ref=v1.0.1"
+  source = "git::https://github.com/rajprathyu/Prathyu-aws-terraform-modules.git//ecr?ref=v1.1.0"
 
   repository_name         = var.repository_name
   image_tag_mutability    = "MUTABLE"
